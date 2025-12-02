@@ -10,6 +10,17 @@
         android:layout_height="wrap_content"
         android:gravity="center_horizontal">
 
+        <!-- Sensor Status -->
+        <TextView
+            android:id="@+id/tv_sensor_status"
+            android:text="Checking sensor..."
+            android:textSize="14sp"
+            android:textColor="#666666"
+            android:layout_marginBottom="20dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Steps Display -->
         <TextView
             android:id="@+id/tv_steps"
             android:text="Steps: 0"
@@ -35,6 +46,33 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <!-- Manual Step Input (Hidden by default) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp"
+            android:gravity="center">
+
+            <EditText
+                android:id="@+id/et_manual_steps"
+                android:hint="Enter steps"
+                android:inputType="number"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btn_add_steps"
+                android:text="Add Steps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <!-- Navigation Buttons -->
         <Button
             android:id="@+id/btn_open_bmi"
             android:text="BMI Calculator"
@@ -58,13 +96,6 @@
         <Button
             android:id="@+id/btn_open_profile"
             android:text="Profile"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp" />
-
-        <Button
-            android:id="@+id/btn_open_settings"
-            android:text="Settings"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp" />

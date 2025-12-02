@@ -2,7 +2,7 @@ package com.example.fitnesstracker;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,37 +10,67 @@ import android.widget.Toast;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private static final String PREFS = "fitnessData";
+    private DBHelper dbHelper;
     private EditText etName, etWeight, etHeight;
     private Button btnSave;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile); // ensure this exists
+        setContentView(R.layout.activity_profile);
+
+        dbHelper = new DBHelper(this);
 
         etName = findViewById(R.id.et_name);
         etWeight = findViewById(R.id.et_weight);
         etHeight = findViewById(R.id.et_height);
         btnSave = findViewById(R.id.btn_save_profile);
 
-        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        etName.setText(prefs.getString("profile_name", ""));
-        etWeight.setText(prefs.getString("profile_weight", ""));
-        etHeight.setText(prefs.getString("profile_height", ""));
+        // Load existing profile data
+        loadProfile();
 
         btnSave.setOnClickListener(v -> {
             String name = etName.getText().toString().trim();
-            String weight = etWeight.getText().toString().trim();
-            String height = etHeight.getText().toString().trim();
+            String weightStr = etWeight.getText().toString().trim();
+            String heightStr = etHeight.getText().toString().trim();
 
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("profile_name", name);
-            editor.putString("profile_weight", weight);
-            editor.putString("profile_height", height);
-            editor.apply();
+            if (name.isEmpty() || weightStr.isEmpty() || heightStr.isEmpty()) {
+                Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-            Toast.makeText(this, "Profile saved", Toast.LENGTH_SHORT).show();
+            try {
+                double weight = Double.parseDouble(weightStr);
+                double height = Double.parseDouble(heightStr);
+
+                if (weight <= 0 || height <= 0) {
+                    Toast.makeText(this, "Please enter valid values", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                boolean success = dbHelper.insertOrUpdateProfile(name, weight, height);
+                if (success) {
+                    Toast.makeText(this, "Profile saved to database!", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(this, "Failed to save profile", Toast.LENGTH_SHORT).show();
+                }
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Please enter valid numbers", Toast.LENGTH_SHORT).show();
+            }
         });
+    }
+
+    private void loadProfile() {
+        Cursor cursor = dbHelper.getProfile();
+        if (cursor.moveToFirst()) {
+            String name = cursor.getString(cursor.getColumnIndexOrThrow("name"));
+            double weight = cursor.getDouble(cursor.getColumnIndexOrThrow("weight"));
+            double height = cursor.getDouble(cursor.getColumnIndexOrThrow("height"));
+
+            etName.setText(name);
+            etWeight.setText(String.valueOf(weight));
+            etHeight.setText(String.valueOf(height));
+        }
+        cursor.close();
     }
 }

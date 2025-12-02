@@ -34,7 +34,6 @@
         <activity android:name=".WorkoutDetailActivity" />
         <activity android:name=".HistoryActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".SettingsActivity" />
 
     </application>
 
